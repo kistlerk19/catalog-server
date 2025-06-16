@@ -22,7 +22,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, loading = false }) 
     );
   }
 
-  if (products.length === 0) {
+  // Fix: Add null/undefined check before accessing length
+  if (!products || products.length === 0) {
     return (
       <div className="text-center py-12">
         <svg

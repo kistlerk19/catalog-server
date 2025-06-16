@@ -48,27 +48,49 @@ const ProductsPage: React.FC = () => {
       try {
         // Convert search params to API params
         const apiParams: Record<string, string> = {};
-        Object.entries(currentParams).forEach(([key, value]) => {
-          if (value) {
-            apiParams[key] = value;
-          }
-        });
+Object.entries(currentParams).forEach(([key, value]) => {
+  // Only add non-empty values (exclude empty strings, null, undefined)
+  if (value && value.trim() !== '') {
+    apiParams[key] = value.trim();
+  }
+});
 
         // Use search endpoint if there's a query, otherwise use regular products endpoint
         if (apiParams.q) {
           const searchResponse = await productsAPI.searchProducts(apiParams);
-          setProducts(searchResponse.products);
-          setPagination(searchResponse.pagination);
-          setSearchInfo(searchResponse.search_info);
+          if (searchResponse?.products) {
+            setProducts(searchResponse.products);
+          }
+          if (searchResponse?.pagination) {
+            setPagination(searchResponse.pagination);
+          }
+          if (searchResponse?.search_info) {
+            setSearchInfo(searchResponse.search_info);
+          }
         } else {
           const productsResponse = await productsAPI.getProducts(apiParams);
-          setProducts(productsResponse.products);
-          setPagination(productsResponse.pagination);
+          if (productsResponse?.products) {
+            setProducts(productsResponse.products);
+          }
+          if (productsResponse?.pagination) {
+            setPagination(productsResponse.pagination);
+          }
         }
       } catch (error) {
         console.error('Error fetching products:', error);
         setError('Failed to load products. Please try again.');
         setProducts([]);
+        // Reset pagination to prevent undefined errors
+        setPagination({
+          page: 1,
+          per_page: 12,
+          total: 0,
+          pages: 0,
+          has_prev: false,
+          has_next: false,
+          prev_num: 0,
+          next_num: 0,
+        });
       } finally {
         setLoading(false);
       }
@@ -122,6 +144,18 @@ const ProductsPage: React.FC = () => {
     });
   }, [searchParams, setSearchParams]);
 
+  // Safe access to pagination properties with fallbacks
+  const safePagination = {
+    page: pagination?.page || 1,
+    per_page: pagination?.per_page || 12,
+    total: pagination?.total || 0,
+    pages: pagination?.pages || 1,
+    has_prev: pagination?.has_prev || false,
+    has_next: pagination?.has_next || false,
+    prev_num: pagination?.prev_num || 0,
+    next_num: pagination?.next_num || 0,
+  };
+
   return (
     <Layout>
       <div className="bg-white">
@@ -169,20 +203,20 @@ const ProductsPage: React.FC = () => {
                   <p className="text-sm text-gray-600">
                     Showing{' '}
                     <span className="font-medium text-primary-700">
-                      {products.length > 0 ? (pagination.page - 1) * pagination.per_page + 1 : 0}
+                      {(products?.length || 0) > 0 ? (safePagination.page - 1) * safePagination.per_page + 1 : 0}
                     </span>{' '}
                     to{' '}
                     <span className="font-medium text-primary-700">
-                      {Math.min(pagination.page * pagination.per_page, pagination.total)}
+                      {Math.min(safePagination.page * safePagination.per_page, safePagination.total)}
                     </span>{' '}
-                    of <span className="font-medium text-primary-700">{pagination.total}</span> products
+                    of <span className="font-medium text-primary-700">{safePagination.total}</span> products
                   </p>
                   
                   <div className="text-sm text-gray-500 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1 text-primary-500">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
                     </svg>
-                    Page {pagination.page} of {pagination.pages}
+                    Page {safePagination.page} of {safePagination.pages}
                   </div>
                 </div>
 
@@ -199,12 +233,12 @@ const ProductsPage: React.FC = () => {
                 )}
 
                 {/* Products */}
-                <ProductGrid products={products} loading={loading} />
+                <ProductGrid products={products || []} loading={loading} />
 
-                {/* Pagination */}
-                {pagination.pages > 1 && (
+                {/* Pagination - only show if there are multiple pages */}
+                {safePagination.pages > 1 && (
                   <div className="mt-8">
-                    <Pagination pagination={pagination} onPageChange={handlePageChange} />
+                    <Pagination pagination={safePagination} onPageChange={handlePageChange} />
                   </div>
                 )}
               </div>

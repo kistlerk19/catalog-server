@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import { productsAPI } from '../services/api';
@@ -20,24 +20,7 @@ const ProductFormPage: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const categoriesList = await productsAPI.getCategories();
-        setCategories(categoriesList);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-
-    if (isEditMode && id) {
-      fetchProduct();
-    }
-  }, [id, isEditMode]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     if (!id) return;
     
     setLoading(true);
@@ -55,7 +38,24 @@ const ProductFormPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesList = await productsAPI.getCategories();
+        setCategories(categoriesList);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+
+    if (isEditMode && id) {
+      fetchProduct();
+    }
+  }, [id, isEditMode, fetchProduct]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
