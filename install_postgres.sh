@@ -1,29 +1,6 @@
 #!/usr/bin/env bash
-# ============================================
-# PostgreSQL Complete Uninstall and Reinstall on Ubuntu
-# ============================================
 
-echo "=== STEP 1: COMPLETE POSTGRESQL UNINSTALL ==="
-
-# Stop PostgreSQL service
-sudo systemctl stop postgresql
-
-# Remove PostgreSQL packages
-sudo apt-get --purge remove postgresql postgresql-*
-
-# Remove configuration files and data directories
-sudo rm -rf /var/lib/postgresql/
-sudo rm -rf /var/log/postgresql/
-sudo rm -rf /etc/postgresql/
-
-# Remove PostgreSQL user
-sudo deluser postgres
-
-# Clean up any remaining packages
-sudo apt-get autoremove
-sudo apt-get autoclean
-
-echo "=== STEP 2: FRESH POSTGRESQL INSTALLATION ==="
+echo "=== FRESH POSTGRESQL INSTALLATION ==="
 
 # Update package list
 sudo apt update

@@ -1,10 +1,6 @@
--- ============================================
--- Catalog Database Setup - After Fresh Install
--- ============================================
 
--- Step 1: Connect as postgres superuser
+-- Connect as postgres superuser
 -- Command: psql -U postgres
--- (You'll be prompted for the postgres password you set during install)
 
 -- Create the catalog database
 CREATE DATABASE catalog;
@@ -37,16 +33,3 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA catalog
 
 -- Exit
 \q
-
--- ============================================
--- Verification
--- ============================================
-
--- Now you should be able to connect as catalog_user:
--- psql -U catalog_user -d catalog
--- 
--- Test commands once connected:
--- SELECT current_user, current_database();
--- \dn+ catalog
--- CREATE TABLE catalog.test_table (id SERIAL PRIMARY KEY, name VARCHAR(50));
--- DROP TABLE catalog.test_table;

@@ -2,6 +2,9 @@
 
 A full-stack product catalog application with a Flask RESTful API backend and React TypeScript frontend.
 
+**Author**: Ishmael Gyamfi  
+**Last Updated**: June 16, 2025
+
 ## Features
 
 - **User Authentication**: Register, login, and profile management with JWT
@@ -9,6 +12,10 @@ A full-stack product catalog application with a Flask RESTful API backend and Re
 - **Advanced Search**: Filter products by name, category, price range, and more
 - **Role-Based Access Control**: Different permissions for users and administrators
 - **Responsive UI**: Modern interface built with React and Tailwind CSS
+
+## Todo
+
+- **Rate Limiting**: Implement API rate limiting to prevent abuse
 
 ## Tech Stack
 
@@ -149,7 +156,3 @@ When making changes to the database models:
 flask db migrate -m "Description of changes"
 flask db upgrade
 ```
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
